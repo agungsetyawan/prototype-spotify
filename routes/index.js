@@ -13,6 +13,7 @@ var spotifyApi = new SpotifyWebApi({
 function getLyrics(artist, title, callback) {
   var url = 'https://api.lyrics.ovh/v1/' + artist + '/' + title;
   request(url, function(error, response, body) {
+    // console.log(JSON.parse(body));
     if (error || response.statusCode !== 200) {
       return callback(error || {
         statusCode: response.statusCode
@@ -24,38 +25,68 @@ function getLyrics(artist, title, callback) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // res.render('index', {
-  //   title: 'Express'
-  // });
-
   if (req.cookies.spotify_access_token === undefined) {
+    res.clearCookie('spotify_access_token');
     res.redirect('/login');
   } else {
     spotifyApi.setAccessToken(req.cookies.spotify_access_token);
+    spotifyApi.setRefreshToken(req.cookies.spotify_refresh_token);
+
     var artists = [];
     var title = '';
+
+    // Get the authenticated user
+    spotifyApi.getMe().then(
+      function(data) {
+        // console.log('Some information about the authenticated user', data.body);
+        console.log('\n=== User detail ===');
+        console.log('Display name:', data.body.display_name);
+        console.log('Email:', data.body.email);
+        console.log('Birth date:', data.body.birthdate);
+        console.log('image:', data.body.images[0].url);
+        console.log('url:', data.body.external_urls.spotify);
+        console.log('Product:', data.body.product);
+      },
+      function(err) {
+        console.log('Something went wrong!', err);
+      }
+    );
 
     // Get information about current playing song for signed in user
     spotifyApi.getMyCurrentPlaybackState({}).then(
       function(data) {
-        var item = data.body.item;
-        for (var i = 0; i < item.artists.length; i++) {
-          artists = artists.concat(item.artists[i].name);
-        }
-        title = data.body.item.name;
-        // Output items
-        console.log("Now Playing: ", artists.join(', ') + ' - ' + title);
+        if (JSON.stringify(data.body) === '{}') {
+          console.log('You are offline');
+          res.status(200);
+          res.send('You are offline');
+        } else {
+          data.body.item.artists.forEach(function(artist) {
+            artists = artists.concat(artist.name);
+          });
+          title = data.body.item.name;
+          // Output items
+          console.log('\n=== ♫ Now Playing:', artists.join(', ') + ' - ' + title + ' ===\n');
 
-        getLyrics(artists[0], title, function(err, body) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(body.lyrics);
-            var lyrics = body.lyrics.replace(/(\r\n|\n|\r)/gm,"<br>");
-            res.status(200);
-            res.send("Now Playing: " + artists.join(', ') + ' - ' + title + '<br><br><br>' + lyrics);
-          }
-        });
+          getLyrics(artists[0], title, function(err, body) {
+            if (err) {
+              console.log(err);
+              console.log('Lyrics not found\n');
+              res.status(200);
+              res.render('index', {
+                title: artists.join(', ') + ' - ' + title,
+                lyrics: 'Lyrics not found\n'
+              });
+            } else {
+              // console.log(body.lyrics + '\n');
+              var lyrics = body.lyrics.replace(/(\r\n|\n|\r)/gm, "<br>");
+              res.status(200);
+              res.render('index', {
+                title: '♫ ' + artists.join(', ') + ' - ' + title,
+                lyrics: lyrics
+              });
+            }
+          });
+        }
       },
       function(err) {
         console.log('Something went wrong!', err);

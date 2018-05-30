@@ -18,6 +18,7 @@ router.get('/', function(req, res, next) {
   /* Get the access token! */
   spotifyApi.authorizationCodeGrant(code).then(
     function(data) {
+      // console.log(data.body);
       // console.log('The token expires in ' + data.body['expires_in']);
       // console.log('The access token is ' + data.body['access_token']);
       // console.log('The refresh token is ' + data.body['refresh_token']);
@@ -26,11 +27,12 @@ router.get('/', function(req, res, next) {
       // spotifyApi.setAccessToken(data.body['access_token']);
       // spotifyApi.setRefreshToken(data.body['refresh_token']);
 
-      if (req.cookies.spotify_access_token === undefined) {
-        res.cookie('spotify_access_token', data.body['access_token'], {
-          expire: new Date() + data.body['expires_in']
-        });
-      }
+      // if (req.cookies.spotify_access_token === undefined) {
+      res.cookie('spotify_access_token', data.body['access_token'], {
+        maxAge: data.body['expires_in']
+      });
+      res.cookie('spotify_refresh_token', data.body['refresh_token']);
+      // }
 
       res.redirect('/');
     },
