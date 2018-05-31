@@ -6,10 +6,9 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var env = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI : 'https://spotifyz.herokuapp.com/callback/'
+  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
 }
 
-// credentials are optional
 var spotifyApi = new SpotifyWebApi({
   clientId: env.clientId,
   clientSecret: env.clientSecret,
@@ -73,7 +72,6 @@ router.get('/', function(req, res, next) {
             artists = artists.concat(artist.name);
           });
           title = data.body.item.name;
-          // Output items
           console.log('\n=== ♫ Now Playing:', artists.join(', ') + ' ● ' + title + ' ===\n');
 
           getLyrics(artists[0], title, function(err, body) {

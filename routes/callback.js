@@ -5,10 +5,9 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var env = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI : 'https://spotifyz.herokuapp.com/callback/'
+  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
 }
 
-// credentials are optional
 var spotifyApi = new SpotifyWebApi({
   clientId: env.clientId,
   clientSecret: env.clientSecret,
@@ -17,9 +16,8 @@ var spotifyApi = new SpotifyWebApi({
 
 /* Handle authorization callback from Spotify */
 router.get('/', function(req, res, next) {
-  /* Read query parameters */
-  var code = req.query.code; // Read the authorization code from the query parameters
-  var state = req.query.state; // (Optional) Read the state from the query parameter
+  var code = req.query.code;
+  var state = req.query.state;
 
   /* Get the access token! */
   spotifyApi.authorizationCodeGrant(code).then(
