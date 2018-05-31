@@ -28,7 +28,7 @@ function getLyrics(artist, title, callback) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  if ((req.cookies.spotify_access_token === undefined) && (req.cookies.spotify_refresh_token === undefined)) {
+  if (req.cookies.spotify_refresh_token === undefined) {
     res.redirect('/login');
   } else if (req.cookies.spotify_access_token === undefined) {
     res.clearCookie('spotify_access_token');
