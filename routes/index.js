@@ -7,7 +7,7 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.PORT === 8080 ? process.env.REDIRECT_URI : 'https://spotifyz.herokuapp.com/callback/'
+  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI : 'https://spotifyz.herokuapp.com/callback/'
 });
 
 function getLyrics(artist, title, callback) {
@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
     // Get the authenticated user
     spotifyApi.getMe().then(
       function(data) {
-        // console.log('Some information about the authenticated user', data.body);
+        console.log('Some information about the authenticated user', data.body);
         console.log('\n=== User detail ===');
         console.log('Display name:', data.body.display_name);
         console.log('Email:', data.body.email);
