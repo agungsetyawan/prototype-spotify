@@ -6,7 +6,7 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.REDIRECT_URI
+  redirectUri: process.env.PORT === 8080 ? process.env.REDIRECT_URI : 'https://spotifyz.herokuapp.com/callback/'
 });
 
 /* Handle authorization callback from Spotify */
