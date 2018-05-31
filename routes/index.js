@@ -43,7 +43,7 @@ router.get('/', function(req, res, next) {
         console.log('Display name:', data.body.display_name);
         console.log('Email:', data.body.email);
         console.log('Birth date:', data.body.birthdate);
-        console.log('image:', data.body.images[0].url);
+        console.log('image:', data.body.images.length > 0 ? data.body.images[0].url : 'null');
         console.log('url:', data.body.external_urls.spotify);
         console.log('Product:', data.body.product);
       },
