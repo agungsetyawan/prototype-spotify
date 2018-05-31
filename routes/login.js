@@ -2,11 +2,17 @@ var express = require('express');
 var router = express.Router();
 var SpotifyWebApi = require('spotify-web-api-node');
 
-// credentials are optional
-var spotifyApi = new SpotifyWebApi({
+var env = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI : 'https://spotifyz.herokuapp.com/callback/'
+}
+
+// credentials are optional
+var spotifyApi = new SpotifyWebApi({
+  clientId: env.clientId,
+  clientSecret: env.clientSecret,
+  redirectUri: env.redirectUri
 });
 
 /**
@@ -36,8 +42,8 @@ router.get('/', function(req, res, next) {
       'user-modify-playback-state', 'user-read-currently-playing', 'user-read-playback-state',
       'user-follow-modify', 'user-follow-read'
     ],
-    redirectUri = process.env.REDIRECT_URI,
-    clientId = process.env.CLIENT_ID,
+    redirectUri = env.redirectUri,
+    clientId = env.clientId,
     state = state;
 
   // Create the authorization URL
