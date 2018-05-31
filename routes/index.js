@@ -11,6 +11,9 @@ var spotifyApi = new SpotifyWebApi({
 });
 
 function getLyrics(artist, title, callback) {
+  if (title.indexOf('-') != -1) {
+    title = title.substring(0, title.indexOf('-')).trim();
+  }
   var url = 'https://api.lyrics.ovh/v1/' + artist + '/' + title;
   request(url, function(error, response, body) {
     // console.log(JSON.parse(body));
@@ -25,9 +28,11 @@ function getLyrics(artist, title, callback) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  if (req.cookies.spotify_access_token === undefined) {
-    res.clearCookie('spotify_access_token');
+  if ((req.cookies.spotify_access_token === undefined) && (req.cookies.spotify_refresh_token === undefined)) {
     res.redirect('/login');
+  } else if (req.cookies.spotify_access_token === undefined) {
+    res.clearCookie('spotify_access_token');
+    res.redirect('/callback');
   } else {
     spotifyApi.setAccessToken(req.cookies.spotify_access_token);
     spotifyApi.setRefreshToken(req.cookies.spotify_refresh_token);
@@ -38,7 +43,7 @@ router.get('/', function(req, res, next) {
     // Get the authenticated user
     spotifyApi.getMe().then(
       function(data) {
-        console.log('Some information about the authenticated user', data.body);
+        // console.log('Some information about the authenticated user', data.body);
         console.log('\n=== User detail ===');
         console.log('Display name:', data.body.display_name);
         console.log('Email:', data.body.email);
@@ -65,7 +70,7 @@ router.get('/', function(req, res, next) {
           });
           title = data.body.item.name;
           // Output items
-          console.log('\n=== ♫ Now Playing:', artists.join(', ') + ' - ' + title + ' ===\n');
+          console.log('\n=== ♫ Now Playing:', artists.join(', ') + ' ● ' + title + ' ===\n');
 
           getLyrics(artists[0], title, function(err, body) {
             if (err) {
@@ -81,7 +86,7 @@ router.get('/', function(req, res, next) {
               var lyrics = body.lyrics.replace(/(\r\n|\n|\r)/gm, "<br>");
               res.status(200);
               res.render('index', {
-                title: '♫ ' + artists.join(', ') + ' - ' + title,
+                title: '♫ ' + artists.join(', ') + ' ● ' + title,
                 lyrics: lyrics
               });
             }
