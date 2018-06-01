@@ -16,6 +16,9 @@ var spotifyApi = new SpotifyWebApi({
 });
 
 function getLyrics(artist, title, callback) {
+  if ((artist.indexOf('/') != -1) || (artist.indexOf('\\') != -1)) {
+    artist = artist.replace(/(\/|\\)/gm, "");
+  }
   if (title.indexOf('-') != -1) {
     title = title.substring(0, title.indexOf('-')).trim();
   }
@@ -63,6 +66,7 @@ router.get('/', function(req, res, next) {
     // Get information about current playing song for signed in user
     spotifyApi.getMyCurrentPlaybackState({}).then(
       function(data) {
+        // console.log(data);
         if (JSON.stringify(data.body) === '{}') {
           console.log('You are offline');
           res.status(200);
@@ -85,11 +89,14 @@ router.get('/', function(req, res, next) {
               });
             } else {
               // console.log(body.lyrics + '\n');
-              var lyrics = body.lyrics.replace(/(\r\n|\n|\r)/gm, "<br>");
+              // var lyrics = body.lyrics.replace(/(\n\n|\r\n|\n|\r)/gm, "<br>");
+              var lyrics = body.lyrics;
               res.status(200);
               res.render('index', {
                 title: '♫ ' + artists.join(', ') + ' ● ' + title,
-                lyrics: lyrics
+                lyrics: lyrics,
+                duration_ms: data.body.item.duration_ms,
+                progress_ms: data.body.progress_ms
               });
             }
           });
