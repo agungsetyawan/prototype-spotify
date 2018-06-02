@@ -1,10 +1,13 @@
 extends layout
 
 block content
-  h1= title
+  image(src=imageAlbum style="width:150px")
+  h1.title= title
+  h2.artist= artist
+  
   p(style="white-space: pre-line")!= lyrics
 
   script.
     setTimeout(function() {
     window.location.reload(1);
-    }, (#{duration_ms} - #{progress_ms}) + 1000);
+    }, (#{duration_ms} - #{progress_ms}));

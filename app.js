@@ -13,7 +13,7 @@ if (result.error) {
 console.log(result.parsed);
 
 var indexRouter = require('./routes/index');
-var loginRouter = require('./routes/login');
+var authRouter = require('./routes/auth');
 var callbackRouter = require('./routes/callback');
 var refreshTokenRouter = require('./routes/refresh_token');
 
@@ -33,7 +33,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/login', loginRouter);
+app.use('/auth', authRouter);
 app.use('/callback', callbackRouter);
 app.use('/refresh_token', refreshTokenRouter);
 

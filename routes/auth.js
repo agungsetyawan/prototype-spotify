@@ -27,11 +27,10 @@ var generateRandomString = function(length) {
   }
   return text;
 };
-var stateKey = 'spotify_auth_state';
 
 router.get('/', function(req, res, next) {
   var state = generateRandomString(16);
-  res.cookie(stateKey, state);
+  res.cookie('spotify_auth_state', state);
 
   var scopes = ['user-library-read', 'user-library-modify',
       'playlist-read-private', 'playlist-modify-public', 'playlist-modify-private', 'playlist-read-collaborative',

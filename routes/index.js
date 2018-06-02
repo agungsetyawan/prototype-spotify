@@ -24,13 +24,25 @@ function getLyrics(artist, title, callback) {
   }
   var url = 'https://api.lyrics.ovh/v1/' + artist + '/' + title;
   request(url, function(error, response, body) {
-    // console.log(JSON.parse(body));
     if (error || response.statusCode !== 200) {
       return callback(error || {
         statusCode: response.statusCode
       });
     }
-    callback(null, JSON.parse(body));
+    // console.log(body);
+    var bodyParse = JSON.parse(body).lyrics;
+    var lyrics = bodyParse.includes('\n\n\n\n') ? '' : bodyParse;
+    console.log(bodyParse.includes('\n\n\n\n'));
+    if (bodyParse.includes('\n\n\n\n')) {
+      lyrics = bodyParse.substr(0, bodyParse.indexOf('\n\n')-1);
+      // console.log(lyrics);
+      var temp = bodyParse.substr(bodyParse.indexOf('\n\n'), bodyParse.length);
+      // console.log(temp);
+      lyricsTemp = temp.replace(/\n\n/g, '\n');
+      lyrics += lyricsTemp;
+    }
+    // console.log(lyrics);
+    callback(null, lyrics);
   });
 }
 
@@ -38,7 +50,7 @@ function getLyrics(artist, title, callback) {
 router.get('/', function(req, res, next) {
   if (req.cookies.spotify_access_token === undefined) {
     res.clearCookie('spotify_access_token');
-    res.redirect('/login');
+    res.redirect('/auth');
   } else {
     spotifyApi.setAccessToken(req.cookies.spotify_access_token);
     spotifyApi.setRefreshToken(req.cookies.spotify_refresh_token);
@@ -70,31 +82,37 @@ router.get('/', function(req, res, next) {
         if (JSON.stringify(data.body) === '{}') {
           console.log('You are offline');
           res.status(200);
-          res.send('You are offline');
+          // res.send('Your spotify is offline');
+          res.render('index', {
+            artist: 'Your spotify is offline'
+          });
         } else {
           data.body.item.artists.forEach(function(artist) {
             artists = artists.concat(artist.name);
           });
           title = data.body.item.name;
-          console.log('\n=== ♫ Now Playing:', artists.join(', ') + ' ● ' + title + ' ===\n');
+          console.log('\n=== ♫ Now Playing:', artists.join(', ') + ' • ' + title + ' ===\n');
 
-          getLyrics(artists[0], title, function(err, body) {
+          getLyrics(artists[0], title, function(err, lyrics) {
             if (err) {
               console.log(err);
               console.log('Lyrics not found\n');
               res.status(200);
               res.render('index', {
-                title: artists.join(', ') + ' - ' + title,
-                lyrics: 'Lyrics not found\n'
+                artist: artists.join(', '),
+                title: title,
+                lyrics: 'Lyrics not found\n',
+                imageAlbum: data.body.item.album.images[0].url,
+                duration_ms: data.body.item.duration_ms,
+                progress_ms: data.body.progress_ms
               });
             } else {
-              // console.log(body.lyrics + '\n');
-              // var lyrics = body.lyrics.replace(/(\n\n|\r\n|\n|\r)/gm, "<br>");
-              var lyrics = body.lyrics;
               res.status(200);
               res.render('index', {
-                title: '♫ ' + artists.join(', ') + ' ● ' + title,
+                artist: artists.join(', '),
+                title: title,
                 lyrics: lyrics,
+                imageAlbum: data.body.item.album.images[0].url,
                 duration_ms: data.body.item.duration_ms,
                 progress_ms: data.body.progress_ms
               });
