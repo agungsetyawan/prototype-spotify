@@ -12,7 +12,7 @@
         "CLIENT_ID": "312f0f7a6e4e44059ed2ad2cbce2815b",
         "CLIENT_SECRET": "44cb5695e13044bcb061dfd3c9993d0f",
         "REDIRECT_URI": "https://spotify.protype.space/callback/",
-        "REDIRECT_URI_LOCAL": "http://localhost:3001/callback/"
+        "REDIRECT_URI_LOCAL": "https://spotify.protype.space/callback/"
       }
     }
   ]
