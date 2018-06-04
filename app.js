@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var dotenv = require('dotenv');
+var SpotifyStrategy = require('passport-spotify').Strategy;
 var result = dotenv.config();
 
 if (result.error) {
@@ -54,3 +55,23 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+// =============================================================================
+
+var env = {
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
+}
+
+passport.use(new SpotifyStrategy({
+    clientID: env.clientId,
+    clientSecret: env.clientSecret,
+    callbackURL: env.redirectUri
+  },
+  function(accessToken, refreshToken, expires_in, profile, done) {
+    User.findOrCreate({ spotifyId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));

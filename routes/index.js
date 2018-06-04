@@ -6,7 +6,7 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var env = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
+  redirectUri: process.env.PORT == '3001' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
 }
 
 var spotifyApi = new SpotifyWebApi({
@@ -79,7 +79,7 @@ router.get('/', function(req, res, next) {
     spotifyApi.getMyCurrentPlaybackState({}).then(
       function(data) {
         // console.log(data);
-        if (JSON.stringify(data.body) === '{}') {
+        if (JSON.stringify(data.body) == '{}') {
           console.log('You are offline');
           res.status(200);
           // res.send('Your spotify is offline');

@@ -5,7 +5,7 @@ var SpotifyWebApi = require('spotify-web-api-node');
 var env = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.PORT == '8080' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
+  redirectUri: process.env.PORT == '3001' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
 }
 
 var spotifyApi = new SpotifyWebApi({
