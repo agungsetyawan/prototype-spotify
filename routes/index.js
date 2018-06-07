@@ -66,7 +66,7 @@ router.get('/', function(req, res, next) {
     // Get the authenticated user
     spotifyApi.getMe().then(
       function(data) {
-        // console.log('Some information about the authenticated user', data.body);
+        console.log('Some information about the authenticated user', data.body);
         id = data.body.id;
         displayName = data.body.display_name;
         var query = {
