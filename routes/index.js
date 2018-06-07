@@ -66,16 +66,16 @@ router.get('/', function(req, res, next) {
     // Get the authenticated user
     spotifyApi.getMe().then(
       function(data) {
-        console.log('Some information about the authenticated user', data.body);
+        // console.log('Some information about the authenticated user', data.body);
         id = data.body.id;
-        displayName = data.body.display_name;
+        displayName = data.body.display_name != null ? data.body.display_name : data.body.id;
         var query = {
           id: data.body.id
         }
         var dataUser = {
           birthdate: data.body.birthdate,
           country: data.body.country,
-          display_name: data.body.display_name,
+          display_name: data.body.display_name != null ? data.body.display_name : '',
           email: data.body.email,
           external_urls: {
             spotify: data.body.external_urls.spotify
@@ -86,10 +86,12 @@ router.get('/', function(req, res, next) {
           type: data.body.type,
           uri: data.body.uri
         }
+        // console.log(dataUser);
         userModel.findOne(query, function(err, data) {
           if (err) {
             return console.log('Error mongodb:', err.message);
           } else {
+            // console.log(data);
             if (data == null) {
               userModel.create(dataUser);
             } else {
@@ -106,7 +108,9 @@ router.get('/', function(req, res, next) {
               console.log(displayName + ' is offline');
               res.status(200);
               res.render('index', {
-                artist: 'Your spotify is offline'
+                artist: 'Your spotify is offline',
+                title: '',
+                lyrics: ''
               });
             } else {
               data.body.item.artists.forEach(function(artist) {

@@ -3,55 +3,49 @@ var mongoose = require('mongoose');
 var schema = new mongoose.Schema({
   birthdate: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   country: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   display_name: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   email: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   external_urls: {
     spotify: {
       type: String,
-      default: '',
-      required: true
+      default: null
     }
   },
   id: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   images_url: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   product: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   type: {
     type: String,
-    default: '',
-    required: true
+    default: null
   },
   uri: {
     type: String,
-    default: '',
-    required: true
+    default: null
+  }
+}, {
+  timestamps: {
+    updatedAt: 'lastOnlineAt'
   }
 });
 

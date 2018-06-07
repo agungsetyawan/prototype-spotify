@@ -12,14 +12,18 @@ block content
           p= artist
       nav
         ul
-          li
-            a(href='#lyrics') Lyrics
-          //- li
-          //-   a(href='#work') Work
-          //- li
-          //-   a(href='#about') About
-          //- li
-          //-   a(href='#contact') Contact
+          if lyrics
+            li
+              a(href='#lyrics') Lyrics
+          else
+            li
+              a(href='#') .
+            //- li
+            //-   a(href='#work') Work
+            //- li
+            //-   a(href='#about') About
+            //- li
+            //-   a(href='#contact') Contact
     #main
       article#lyrics
         h2.major Lyrics
