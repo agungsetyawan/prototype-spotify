@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var SpotifyWebApi = require('spotify-web-api-node');
 
 var userModel = require('../models/user_model');
+var lyricsModel = require('../models/lyrics_model');
 
 var env = {
   clientId: process.env.CLIENT_ID,
@@ -20,10 +21,16 @@ var spotifyApi = new SpotifyWebApi({
 
 function getLyrics(artist, title, callback) {
   if ((artist.indexOf('/') != -1) || (artist.indexOf('\\') != -1)) {
-    artist = artist.replace(/(\/|\\)/gm, "");
+    artist = artist.replace(/(\/|\\)/gm, '');
   }
   if (title.indexOf('-') != -1) {
     title = title.substring(0, title.indexOf('-')).trim();
+  }
+  if (artist.indexOf('ë') != -1) {
+    artist = artist.replace('ë', 'e');
+  }
+  if (artist.indexOf('é') != -1) {
+    artist = artist.replace('é', 'e');
   }
   var url = 'https://api.lyrics.ovh/v1/' + artist + '/' + title;
   request(url, function(error, response, body) {
@@ -43,6 +50,13 @@ function getLyrics(artist, title, callback) {
       // console.log(temp);
       lyricsTemp = temp.replace(/\n\n/g, '\n');
       lyrics += lyricsTemp;
+    } else {
+      var dataLyrics = {
+        artist: artist,
+        title: title,
+        lyrics: lyrics
+      }
+      lyricsModel.create(dataLyrics);
     }
     // console.log(lyrics);
     callback(null, lyrics);
@@ -118,30 +132,56 @@ router.get('/', function(req, res, next) {
               });
               title = data.body.item.name;
               console.log('=== ' + displayName + ' ♫ Now Playing:', artists.join(', ') + ' • ' + title + ' ===');
+              var imageAlbum = data.body.item.album.images[0].url;
+              var duration_ms = data.body.item.duration_ms;
+              var progress_ms = data.body.progress_ms;
 
-              getLyrics(artists[0], title, function(err, lyrics) {
+              var queryFindLyrics = {
+                artist: artists[0],
+                title: title
+              }
+              lyricsModel.findOne(queryFindLyrics, function(err, data) {
                 if (err) {
-                  console.log(err);
-                  console.log('Lyrics not found');
-                  res.status(200);
-                  res.render('index', {
-                    artist: artists.join(', '),
-                    title: title,
-                    lyrics: 'Lyrics not found',
-                    imageAlbum: data.body.item.album.images[0].url,
-                    duration_ms: data.body.item.duration_ms,
-                    progress_ms: data.body.progress_ms
-                  });
+                  return console.log('Error mongodb:', err.message);
                 } else {
-                  res.status(200);
-                  res.render('index', {
-                    artist: artists.join(', '),
-                    title: title,
-                    lyrics: lyrics,
-                    imageAlbum: data.body.item.album.images[0].url,
-                    duration_ms: data.body.item.duration_ms,
-                    progress_ms: data.body.progress_ms
-                  });
+                  if (data != null) {
+                    console.log('dapet lirik dari db');
+                    res.status(200);
+                    res.render('index', {
+                      artist: artists.join(', '),
+                      title: title,
+                      lyrics: data.lyrics,
+                      imageAlbum: imageAlbum,
+                      duration_ms: duration_ms,
+                      progress_ms: progress_ms
+                    });
+                  } else {
+                    getLyrics(artists[0], title, function(err, lyrics) {
+                      if (err) {
+                        console.log(err);
+                        console.log('Lyrics not found');
+                        res.status(200);
+                        res.render('index', {
+                          artist: artists.join(', '),
+                          title: title,
+                          lyrics: 'Lyrics not found',
+                          imageAlbum: imageAlbum,
+                          duration_ms: duration_ms,
+                          progress_ms: progress_ms
+                        });
+                      } else {
+                        res.status(200);
+                        res.render('index', {
+                          artist: artists.join(', '),
+                          title: title,
+                          lyrics: lyrics,
+                          imageAlbum: imageAlbum,
+                          duration_ms: duration_ms,
+                          progress_ms: progress_ms
+                        });
+                      }
+                    });
+                  }
                 }
               });
             }
