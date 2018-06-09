@@ -13,7 +13,8 @@
         "CLIENT_SECRET": "44cb5695e13044bcb061dfd3c9993d0f",
         "REDIRECT_URI": "https://spotify.protype.space/callback/",
         "REDIRECT_URI_LOCAL": "https://spotify.protype.space/callback/",
-        "DB": "mongodb+srv://spotify:spotify@spotify-zrfvd.mongodb.net/spotify"
+        "DB": "mongodb+srv://spotify:spotify@spotify-zrfvd.mongodb.net/spotify",
+        "GENIUS_CLIENT_ACCESS_TOKEN": "CuSy19nnzVQqU_vt97wk3dZo93dlKtpuk9W9pWfy8wxw-gqymD507jN8t3yJDN1l"
       }
     }
   ]

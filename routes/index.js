@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var rp = require('request-promise');
 var mongoose = require('mongoose');
 var SpotifyWebApi = require('spotify-web-api-node');
+var Lyricist = require('lyricist');
+var lyricist = new Lyricist(process.env.GENIUS_CLIENT_ACCESS_TOKEN);
 
 var userModel = require('../models/user_model');
 var lyricsModel = require('../models/lyrics_model');
@@ -19,49 +22,100 @@ var spotifyApi = new SpotifyWebApi({
   redirectUri: env.redirectUri
 });
 
-function getLyrics(artist, title, callback) {
-  if ((artist.indexOf('/') != -1) || (artist.indexOf('\\') != -1)) {
-    artist = artist.replace(/(\/|\\)/gm, '');
-  }
+// api genius 'https://api.genius.com/search?q=<query>'
+function getGeniusSearch(artist, title) {
   if (title.indexOf('-') != -1) {
     title = title.substring(0, title.indexOf('-')).trim();
   }
-  if (artist.indexOf('ë') != -1) {
-    artist = artist.replace('ë', 'e');
+  if (title.indexOf('(') != -1) {
+    title = title.substring(0, title.indexOf('(')).trim();
   }
-  if (artist.indexOf('é') != -1) {
-    artist = artist.replace('é', 'e');
+  var query = title + ' ' + artist;
+  console.log(query);
+  query = encodeURI(query);
+
+  var optionsGeniusSearch = {
+    uri: 'https://api.genius.com/search?q=' + query,
+    auth: {
+      'bearer': process.env.GENIUS_CLIENT_ACCESS_TOKEN
+    },
+    json: true
   }
-  var url = 'https://api.lyrics.ovh/v1/' + artist + '/' + title;
-  request(url, function(error, response, body) {
-    if (error || response.statusCode !== 200) {
-      return callback(error || {
-        statusCode: response.statusCode
-      });
-    }
-    // console.log(body);
-    var bodyParse = JSON.parse(body).lyrics;
-    var lyrics = bodyParse.includes('\n\n\n\n') ? '' : bodyParse;
-    console.log(bodyParse.includes('\n\n\n\n'));
-    if (bodyParse.includes('\n\n\n\n')) {
-      lyrics = bodyParse.substr(0, bodyParse.indexOf('\n\n') - 1);
-      // console.log(lyrics);
-      var temp = bodyParse.substr(bodyParse.indexOf('\n\n'), bodyParse.length);
-      // console.log(temp);
-      lyricsTemp = temp.replace(/\n\n/g, '\n');
-      lyrics += lyricsTemp;
-    } else {
-      var dataLyrics = {
-        artist: artist,
-        title: title,
-        lyrics: lyrics
+  return rp(optionsGeniusSearch).then(
+    function(body) {
+      if (body.response.hits.length > 0) {
+        return body.response.hits[0].result.id;
+      } else {
+        optionsGeniusSearch = {
+          uri: 'https://api.genius.com/search?q=' + title,
+          auth: {
+            'bearer': process.env.GENIUS_CLIENT_ACCESS_TOKEN
+          },
+          json: true
+        };
+        return rp(optionsGeniusSearch).then(
+          function(body) {
+            if (body.response.hits.length > 0) {
+              return body.response.hits[0].result.id;
+            } else {
+              return null;
+            }
+          }).catch(
+          function(err) {
+            console.error(err);
+          }
+        )
       }
-      lyricsModel.create(dataLyrics);
+    }).catch(
+    function(err) {
+      console.error(err);
     }
-    // console.log(lyrics);
-    callback(null, lyrics);
-  });
+  );
 }
+
+// function getLyrics(artist, title, callback) {
+//   if ((artist.indexOf('/') != -1) || (artist.indexOf('\\') != -1)) {
+//     artist = artist.replace(/(\/|\\)/gm, '');
+//   }
+//   if (title.indexOf('-') != -1) {
+//     title = title.substring(0, title.indexOf('-')).trim();
+//   }
+//   if (artist.indexOf('ë') != -1) {
+//     artist = artist.replace('ë', 'e');
+//   }
+//   if (artist.indexOf('é') != -1) {
+//     artist = artist.replace('é', 'e');
+//   }
+//   var url = 'https://api.lyrics.ovh/v1/' + artist + '/' + title;
+//   request(url, function(error, response, body) {
+//     if (error || response.statusCode !== 200) {
+//       return callback(error || {
+//         statusCode: response.statusCode
+//       });
+//     }
+//     // console.log(body);
+//     var bodyParse = JSON.parse(body).lyrics;
+//     var lyrics = bodyParse.includes('\n\n\n\n') ? '' : bodyParse;
+//     console.log(bodyParse.includes('\n\n\n\n'));
+//     if (bodyParse.includes('\n\n\n\n')) {
+//       lyrics = bodyParse.substr(0, bodyParse.indexOf('\n\n') - 1);
+//       // console.log(lyrics);
+//       var temp = bodyParse.substr(bodyParse.indexOf('\n\n'), bodyParse.length);
+//       // console.log(temp);
+//       lyricsTemp = temp.replace(/\n\n/g, '\n');
+//       lyrics += lyricsTemp;
+//     } else {
+//       var dataLyrics = {
+//         artist: artist,
+//         title: title,
+//         lyrics: lyrics
+//       }
+//       lyricsModel.create(dataLyrics);
+//     }
+//     // console.log(lyrics);
+//     callback(null, lyrics);
+//   });
+// }
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -120,12 +174,17 @@ router.get('/', function(req, res, next) {
             // console.log(data);
             if (JSON.stringify(data.body) == '{}') {
               console.log(displayName + ' is offline');
-              res.status(200);
-              res.render('index', {
+              var data = {
                 artist: 'Your spotify is offline',
-                title: '',
-                lyrics: ''
-              });
+                title: 'Hi, ' + displayName,
+                lyrics: '?',
+                description: '?',
+                imageAlbum: dataUser.images_url != '' ? dataUser.images_url : '/images/android-chrome-512x512.png',
+                duration_ms: 0,
+                progress_ms: 0
+              }
+              res.status(200);
+              res.render('index', data);
             } else {
               data.body.item.artists.forEach(function(artist) {
                 artists = artists.concat(artist.name);
@@ -136,54 +195,88 @@ router.get('/', function(req, res, next) {
               var duration_ms = data.body.item.duration_ms;
               var progress_ms = data.body.progress_ms;
 
-              var queryFindLyrics = {
-                artist: artists[0],
-                title: title
-              }
-              lyricsModel.findOne(queryFindLyrics, function(err, data) {
-                if (err) {
-                  return console.log('Error mongodb:', err.message);
-                } else {
-                  if (data != null) {
-                    console.log('dapet lirik dari db');
-                    res.status(200);
-                    res.render('index', {
-                      artist: artists.join(', '),
-                      title: title,
-                      lyrics: data.lyrics,
-                      imageAlbum: imageAlbum,
-                      duration_ms: duration_ms,
-                      progress_ms: progress_ms
-                    });
-                  } else {
-                    getLyrics(artists[0], title, function(err, lyrics) {
-                      if (err) {
-                        console.log(err);
-                        console.log('Lyrics not found');
-                        res.status(200);
-                        res.render('index', {
-                          artist: artists.join(', '),
-                          title: title,
-                          lyrics: 'Lyrics not found',
-                          imageAlbum: imageAlbum,
-                          duration_ms: duration_ms,
-                          progress_ms: progress_ms
-                        });
-                      } else {
-                        res.status(200);
-                        res.render('index', {
-                          artist: artists.join(', '),
-                          title: title,
-                          lyrics: lyrics,
-                          imageAlbum: imageAlbum,
-                          duration_ms: duration_ms,
-                          progress_ms: progress_ms
-                        });
-                      }
-                    });
+              async function myFunction() {
+                var geniusSearch = await getGeniusSearch(artists[0], title);
+                if (geniusSearch != null) {
+                  var song = await lyricist.song(geniusSearch, {
+                    fetchLyrics: true,
+                    textFormat: 'plain'
+                  });
+                  var data = {
+                    artist: artists.join(', '),
+                    title: title,
+                    lyrics: song.lyrics,
+                    description: song.description.plain,
+                    imageAlbum: imageAlbum,
+                    duration_ms: duration_ms,
+                    progress_ms: progress_ms
                   }
+                  res.status(200);
+                  res.render('index', data);
+                } else {
+                  var data = {
+                    artist: artists.join(', '),
+                    title: title,
+                    lyrics: 'Lyrics not found',
+                    description: '?',
+                    imageAlbum: imageAlbum,
+                    duration_ms: duration_ms,
+                    progress_ms: progress_ms
+                  }
+                  res.status(200);
+                  res.render('index', data);
                 }
-              });
+              }
+              myFunction();
+
+              // var queryFindLyrics = {
+              //   artist: artists[0],
+              //   title: title
+              // }
+              // lyricsModel.findOne(queryFindLyrics, function(err, data) {
+              //   if (err) {
+              //     return console.log('Error mongodb:', err.message);
+              //   } else {
+              //     if (data != null) {
+              //       console.log('dapet lirik dari db');
+              //       res.status(200);
+              //       res.render('index', {
+              //         artist: artists.join(', '),
+              //         title: title,
+              //         lyrics: data.lyrics,
+              //         imageAlbum: imageAlbum,
+              //         duration_ms: duration_ms,
+              //         progress_ms: progress_ms
+              //       });
+              //     } else {
+              //       getLyrics(artists[0], title, function(err, lyrics) {
+              //         if (err) {
+              //           console.log(err);
+              //           console.log('Lyrics not found');
+              //           res.status(200);
+              //           res.render('index', {
+              //             artist: artists.join(', '),
+              //             title: title,
+              //             lyrics: 'Lyrics not found',
+              //             imageAlbum: imageAlbum,
+              //             duration_ms: duration_ms,
+              //             progress_ms: progress_ms
+              //           });
+              //         } else {
+              //           res.status(200);
+              //           res.render('index', {
+              //             artist: artists.join(', '),
+              //             title: title,
+              //             lyrics: lyrics,
+              //             imageAlbum: imageAlbum,
+              //             duration_ms: duration_ms,
+              //             progress_ms: progress_ms
+              //           });
+              //         }
+              //       });
+              //     }
+              //   }
+              // });
             }
           },
           function(err) {
