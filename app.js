@@ -70,8 +70,9 @@ module.exports = app;
 
 // =============================================================================
 
-// var mongo = 'mongodb://localhost:27017/spotify';
-mongoose.connect(process.env.GENIUS_CLIENT_ACCESS_TOKEN, function() {
+var mongo = 'mongodb://localhost:27017/spotify';
+mongoose.connect(mongo, function() {
+// mongoose.connect(process.env.GENIUS_CLIENT_ACCESS_TOKEN, function() {
   try {
     console.log('connected to database:', mongo);
   } catch (error) {

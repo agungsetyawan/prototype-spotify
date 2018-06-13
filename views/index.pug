@@ -3,9 +3,9 @@ extends layout
 block content
   #wrapper
     header#header
-      .logo
+      .logo(style="background-image: url(" + imageAlbum + ")")
         //- span.icon.fa-diamond
-        img(src=imageAlbum)
+        //- img(src=imageAlbum)
       .content
         .inner
           h1= title
@@ -87,6 +87,8 @@ block content
   #bg
       
   script.
+    var color_primary = '#{color_primary}';
+    var color_secondary = '#{color_secondary}';
     var duration_ms = #{duration_ms};
     var progress_ms = #{progress_ms};
   script(src='/javascripts/script.js')
