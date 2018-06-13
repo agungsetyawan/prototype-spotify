@@ -4,8 +4,8 @@ block content
   #wrapper
     header#header
       .logo(style="background-image: url(" + imageAlbum + ")")
-        //- span.icon.fa-diamond
-        //- img(src=imageAlbum)
+      //- .logo
+        img(src=imageAlbum)
       .content
         .inner
           h1= title
@@ -87,8 +87,7 @@ block content
   #bg
       
   script.
-    var color_primary = '#{color_primary}';
-    var color_secondary = '#{color_secondary}';
+    var image_album = '#{imageAlbum}';
     var duration_ms = #{duration_ms};
     var progress_ms = #{progress_ms};
   script(src='/javascripts/script.js')

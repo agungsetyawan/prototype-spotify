@@ -20,8 +20,19 @@
 //   'background-image': 'url(' + pattern.png() + ')'
 // });
 
-$('#bg').css({
-  'background-image': 'linear-gradient(' + color_primary + ',' + color_secondary + ')'
+$(document).ready(function() {
+  var img = document.createElement('img');
+  img.setAttribute('crossOrigin', '*');
+  img.setAttribute('src', image_album);
+  img.addEventListener('load', function() {
+    var vibrant = new Vibrant(img);
+    var swatches = vibrant.swatches();
+    var vibrant_color = swatches['Vibrant'].getHex();
+    var darkmuted_color = swatches['DarkMuted'].getHex();
+    var bg = document.getElementById('bg');
+    // bg.setAttribute('style', 'background-image: linear-gradient(' + vibrant_color + ' 60%' + ',' + darkmuted_color + ')');
+    bg.setAttribute('style', 'background-image: linear-gradient(' + vibrant_color + ' 60%' + ', #000000 )');
+  });
 });
 
 if ((duration_ms != 0) && (progress_ms != 0)) {

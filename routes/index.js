@@ -5,7 +5,6 @@ var rp = require('request-promise');
 var mongoose = require('mongoose');
 var SpotifyWebApi = require('spotify-web-api-node');
 var Lyricist = require('lyricist');
-var colorSort = require('color-sort');
 var lyricist = new Lyricist(process.env.GENIUS_CLIENT_ACCESS_TOKEN);
 
 var userModel = require('../models/user_model');
@@ -78,22 +77,6 @@ function getGeniusSearch(artist, title) {
   );
 }
 
-// function getColor(url) {
-//   var options = {
-//     uri: 'http://www.colorfyit.com/api/swatches/list.json?url=' + url,
-//     json: true
-//   }
-//   return rp(options).then(
-//     function(body) {
-//       console.log(body);
-//       return body.colors[0].Hex;
-//     }).catch(
-//     function(err) {
-//       console.error(err);
-//     }
-//   );
-// }
-
 function getColor(url) {
   var options = {
     uri: 'https://api.imagga.com/v1/colors?url=' + encodeURIComponent(url),
@@ -108,26 +91,8 @@ function getColor(url) {
         primary: '#ffffff',
         secondary: '#000000'
       }
-      // console.log(body.results[0].info);
-      // if ((body.results[0].info.background_colors[0].closest_palette_color_parent == 'black') || (body.results[0].info.background_colors[0].closest_palette_color_parent == 'white')) {
-      //   if (body.results[0].info.foreground_colors.length > 0) {
-      //     color.primary = body.results[0].info.foreground_colors[0].html_code;
-      //     color.secondary = body.results[0].info.foreground_colors[body.results[0].info.foreground_colors.length - 1].html_code;
-      //   }
-      // } else {
-      //   color.primary = body.results[0].info.background_colors[0].html_code;
-      //   if (body.results[0].info.foreground_colors.length > 0) {
-      //     color.secondary = body.results[0].info.foreground_colors[0].html_code;
-      //   } else {
-      //     color.secondary = body.results[0].info.background_colors[body.results[0].info.background_colors.length - 1].html_code;
-      //   }
-      // }
-      var color_image = [];
-      color_image[0] = body.results[0].info.image_colors[0].html_code;
-      color_image[1] = body.results[0].info.image_colors[body.results[0].info.image_colors.length - 1].html_code;
-      var color_sort = colorSort(color_image);
-      color.primary = color_sort[0];
-      color.secondary = color_sort[1];
+      color.primary = body.results[0].info.image_colors[0].html_code;
+      color.secondary = body.results[0].info.image_colors[body.results[0].info.image_colors.length - 1].html_code;
       return color;
     }).catch(
     function(err) {
@@ -243,8 +208,6 @@ router.get('/', function(req, res, next) {
                 lyrics: '?',
                 description: '?',
                 imageAlbum: dataUser.images_url != '' ? dataUser.images_url : '/images/android-chrome-512x512.png',
-                color_primary: '#88ccff',
-                color_secondary: '#000000',
                 duration_ms: 0,
                 progress_ms: 0
               }
@@ -261,7 +224,7 @@ router.get('/', function(req, res, next) {
               var progress_ms = data.body.progress_ms;
 
               async function myFunction() {
-                var color = await getColor(imageAlbum);
+                // var color = await getColor(imageAlbum);
                 var geniusSearch = await getGeniusSearch(artists[0], title);
                 if (geniusSearch != null) {
                   var song = await lyricist.song(geniusSearch, {
@@ -274,8 +237,6 @@ router.get('/', function(req, res, next) {
                     lyrics: song.lyrics,
                     description: song.description.plain,
                     imageAlbum: imageAlbum,
-                    color_primary: color.primary,
-                    color_secondary: color.secondary,
                     duration_ms: duration_ms,
                     progress_ms: progress_ms
                   }
@@ -288,8 +249,6 @@ router.get('/', function(req, res, next) {
                     lyrics: 'Lyrics not found',
                     description: '?',
                     imageAlbum: imageAlbum,
-                    color_primary: color.primary,
-                    color_secondary: color.secondary,
                     duration_ms: duration_ms,
                     progress_ms: progress_ms
                   }
