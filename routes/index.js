@@ -36,7 +36,7 @@ function getGeniusSearch(artist, title) {
   }
   artist = artist.replace(/\s/g, '');
   var query = title + ' ' + artist;
-  console.log(query);
+  // console.log(query);
   query = encodeURI(query);
 
   var optionsGeniusSearch = {
@@ -108,7 +108,7 @@ function getColor(url) {
         primary: '#ffffff',
         secondary: '#000000'
       }
-      console.log(body.results[0].info);
+      // console.log(body.results[0].info);
       // if ((body.results[0].info.background_colors[0].closest_palette_color_parent == 'black') || (body.results[0].info.background_colors[0].closest_palette_color_parent == 'white')) {
       //   if (body.results[0].info.foreground_colors.length > 0) {
       //     color.primary = body.results[0].info.foreground_colors[0].html_code;
