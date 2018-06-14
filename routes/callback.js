@@ -35,6 +35,7 @@ router.get('/', function(req, res, next) {
       res.cookie('spotify_access_token', data.body['access_token'], {
         maxAge: data.body['expires_in']
       });
+      res.cookie('OAuth', data.body['access_token']);
       res.cookie('spotify_refresh_token', data.body['refresh_token']);
       // }
 

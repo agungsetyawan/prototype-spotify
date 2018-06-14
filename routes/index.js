@@ -214,11 +214,13 @@ router.get('/', function(req, res, next) {
               res.status(200);
               res.render('index', data);
             } else {
+              res.cookie('deviceId', data.body.device.id);
+              
               data.body.item.artists.forEach(function(artist) {
                 artists = artists.concat(artist.name);
               });
               title = data.body.item.name;
-              console.log('=== ' + displayName + ' ♫ Now Playing:', artists.join(', ') + ' • ' + title + ' ===');
+              console.log('=== ' + displayName + ' ♫ Now Playing:', title + ' · ' + artists.join(', ') + ' ===');
               var imageAlbum = data.body.item.album.images[0].url;
               var duration_ms = data.body.item.duration_ms;
               var progress_ms = data.body.progress_ms;

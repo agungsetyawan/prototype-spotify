@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title= '♫ ' + artist + ' • ' + title
+    title= title + ' · ' + artist
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1, user-scalable=no')
     link(rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png")
@@ -24,6 +24,7 @@ html
       gtag('js', new Date());
       gtag('config', 'UA-120572471-1');
     script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/jquery.cookie.min.js')
     script(src='/javascripts/skel.min.js')
     script(src='/javascripts/trianglify.min.js')
     script(src='/javascripts/vibrant.min.js')

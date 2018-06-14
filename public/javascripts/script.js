@@ -20,6 +20,65 @@
 //   'background-image': 'url(' + pattern.png() + ')'
 // });
 
+var OAuth = '';
+var deviceId = '';
+
+function nextTrack(OAuth, deviceId) {
+  $.ajax({
+    type: 'POST',
+    url: 'https://api.spotify.com/v1/me/player/next?device_id=' + deviceId,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + OAuth
+    }
+  }).done(function() {
+    window.location.reload(1);
+  });
+}
+
+function prevTrack(OAuth, deviceId) {
+  $.ajax({
+    type: 'POST',
+    url: 'https://api.spotify.com/v1/me/player/previous?device_id=' + deviceId,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + OAuth
+    }
+  }).done(function() {
+    window.location.reload(1);
+  });
+}
+
+function pauseTrack(OAuth, deviceId) {
+  $.ajax({
+    type: 'PUT',
+    url: 'https://api.spotify.com/v1/me/player/pause?device_id=' + deviceId,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + OAuth
+    }
+  }).done(function() {
+    // window.location.reload(1);
+  });
+}
+
+function playTrack(OAuth, deviceId) {
+  $.ajax({
+    type: 'PUT',
+    url: 'https://api.spotify.com/v1/me/player/play?device_id=' + deviceId,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + OAuth
+    }
+  }).done(function() {
+    // window.location.reload(1);
+  });
+}
+
 $(document).ready(function() {
   var img = document.createElement('img');
   img.setAttribute('crossOrigin', '*');
@@ -32,6 +91,40 @@ $(document).ready(function() {
     var bg = document.getElementById('bg');
     // bg.setAttribute('style', 'background-image: linear-gradient(' + vibrant_color + ' 60%' + ',' + darkmuted_color + ')');
     bg.setAttribute('style', 'background-image: linear-gradient(' + vibrant_color + ' 60%' + ', #000000 )');
+  });
+  OAuth = $.cookie('OAuth');
+  deviceId = $.cookie('deviceId');
+
+  $('#next').click(function(e) {
+    $('#next').addClass('disabled');
+    $('#prev').addClass('disabled');
+    $('#play').addClass('disabled');
+    $('#pause').addClass('disabled');
+    e.preventDefault();
+    nextTrack(OAuth, deviceId);
+  });
+
+  $('#prev').click(function(e) {
+    $('#next').addClass('disabled');
+    $('#prev').addClass('disabled');
+    $('#play').addClass('disabled');
+    $('#pause').addClass('disabled');
+    e.preventDefault();
+    prevTrack(OAuth, deviceId);
+  });
+
+  $('#pause').click(function(e) {
+    $('#pause').addClass('disabled');
+    $('#play').removeClass('disabled');
+    e.preventDefault();
+    pauseTrack(OAuth, deviceId);
+  });
+
+  $('#play').click(function(e) {
+    $('#play').addClass('disabled');
+    $('#pause').removeClass('disabled');
+    e.preventDefault();
+    playTrack(OAuth, deviceId);
   });
 });
 
