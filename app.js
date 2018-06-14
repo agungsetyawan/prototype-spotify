@@ -70,8 +70,8 @@ module.exports = app;
 
 // =============================================================================
 
-var mongodb = 'mongodb://localhost:27017/spotify';
-// var mongodb = process.env.DB;
+// var mongodb = 'mongodb://localhost:27017/spotify';
+var mongodb = process.env.DB;
 mongoose.connect(mongodb, function() {
   try {
     console.log('connected to database:', mongodb);
