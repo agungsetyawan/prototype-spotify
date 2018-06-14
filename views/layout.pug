@@ -1,7 +1,10 @@
 doctype html
 html
   head
-    title= title + ' · ' + artist
+    if artist == 'Your spotify is offline'
+      title Protype Space for Spotify
+    else
+      title= title + ' · ' + artist
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1, user-scalable=no')
     link(rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png")
