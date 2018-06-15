@@ -82,13 +82,14 @@ $(document).ready(function() {
   img.addEventListener('load', function() {
     var vibrant = new Vibrant(img);
     var swatches = vibrant.swatches();
-    var vibrant_color = swatches['Vibrant'].getHex();
-    // var darkmuted_color = swatches['DarkMuted'].getHex();
-    // var bg = document.getElementById('bg');
-    // bg.setAttribute('style', 'background-image: linear-gradient(' + vibrant_color + ' 60%' + ',' + darkmuted_color + ')');
-    // bg.setAttribute('style', 'background-image: linear-gradient(' + vibrant_color + ' 60%' + ', #000000 )');
-    $("meta[name='theme-color']").attr('content', vibrant_color);
-    $('#bg').css('background-image', 'linear-gradient(' + vibrant_color + ' 60%' + ', #000000 )');
+    console.log(swatches);
+    if (swatches['Vibrant'] == undefined) {
+      var color = swatches['DarkMuted'].getHex();
+    } else {
+      var color = swatches['Vibrant'].getHex();
+    }
+    $("meta[name='theme-color']").attr('content', color);
+    $('#bg').css('background-image', 'linear-gradient(' + color + ' 60%' + ', #000000 )');
   });
 
   OAuth = $.cookie('OAuth');

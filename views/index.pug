@@ -8,14 +8,15 @@ block content
         .inner
           h1= title
           p= artist
-          if artist != 'Your spotify is offline'
-            ul.icons
-              li
-                a(href='#')#prev.icon.fa-step-backward
-              li
-                a(href='#')#pause.icon.fa-pause
-              li
-                a(href='#')#next.icon.fa-step-forward
+          if product != 'open'
+            if artist != 'Your spotify is offline'
+              ul.icons
+                li
+                  a(href='#')#prev.icon.fa-step-backward
+                li
+                  a(href='#')#pause.icon.fa-pause
+                li
+                  a(href='#')#next.icon.fa-step-forward
       nav
         ul
           if lyrics != '?'

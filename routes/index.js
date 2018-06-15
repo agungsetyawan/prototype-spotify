@@ -156,6 +156,7 @@ router.get('/', function(req, res, next) {
 
     var id = '';
     var displayName = '';
+    var product = '';
     var artists = [];
     var title = '';
 
@@ -165,6 +166,7 @@ router.get('/', function(req, res, next) {
         // console.log('Some information about the authenticated user', data.body);
         id = data.body.id;
         displayName = data.body.display_name != null ? data.body.display_name : data.body.id;
+        product = data.body.product;
         var query = {
           id: data.body.id
         }
@@ -207,15 +209,16 @@ router.get('/', function(req, res, next) {
                 title: 'Hi, ' + displayName,
                 lyrics: '?',
                 description: '?',
-                imageAlbum: dataUser.images_url != '' ? dataUser.images_url : '/images/android-chrome-512x512.png',
+                imageAlbum: dataUser.images_url != '' ? dataUser.images_url : '/images/user.png',
                 duration_ms: 0,
-                progress_ms: 0
+                progress_ms: 0,
+                product: product
               }
               res.status(200);
               res.render('index', data);
             } else {
               res.cookie('deviceId', data.body.device.id);
-              
+
               data.body.item.artists.forEach(function(artist) {
                 artists = artists.concat(artist.name);
               });
@@ -240,7 +243,8 @@ router.get('/', function(req, res, next) {
                     description: song.description.plain,
                     imageAlbum: imageAlbum,
                     duration_ms: duration_ms,
-                    progress_ms: progress_ms
+                    progress_ms: progress_ms,
+                    product: product
                   }
                   res.status(200);
                   res.render('index', data);
@@ -252,7 +256,8 @@ router.get('/', function(req, res, next) {
                     description: '?',
                     imageAlbum: imageAlbum,
                     duration_ms: duration_ms,
-                    progress_ms: progress_ms
+                    progress_ms: progress_ms,
+                    product: product
                   }
                   res.status(200);
                   res.render('index', data);
