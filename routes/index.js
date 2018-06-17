@@ -5,6 +5,7 @@ var rp = require('request-promise');
 var mongoose = require('mongoose');
 var SpotifyWebApi = require('spotify-web-api-node');
 var Lyricist = require('lyricist');
+var jwt = require('jsonwebtoken');
 var lyricist = new Lyricist(process.env.GENIUS_CLIENT_ACCESS_TOKEN);
 
 var userModel = require('../models/user_model');
@@ -153,6 +154,7 @@ router.get('/', function(req, res, next) {
   } else {
     spotifyApi.setAccessToken(req.cookies.spotify_access_token);
     spotifyApi.setRefreshToken(req.cookies.spotify_refresh_token);
+    var OAuth = req.cookies.spotify_access_token;
 
     var id = '';
     var displayName = '';
@@ -217,14 +219,21 @@ router.get('/', function(req, res, next) {
               res.status(200);
               res.render('index', data);
             } else {
-              res.cookie('deviceId', data.body.device.id);
+              var deviceId = data.body.device.id;
+              var token = jwt.sign({
+                OAuth: OAuth,
+                deviceId: deviceId
+              }, 'secret', {
+                expiresIn: '10m'
+              });
+              res.cookie('jwt', token);
 
               data.body.item.artists.forEach(function(artist) {
                 artists = artists.concat(artist.name);
               });
               title = data.body.item.name;
               console.log('=== ' + displayName + ' ♫ Now Playing:', title + ' · ' + artists.join(', ') + ' ===');
-              var imageAlbum = data.body.item.album.images[0].url;
+              var imageAlbum = data.body.item.album.images[1].url;
               var duration_ms = data.body.item.duration_ms;
               var progress_ms = data.body.progress_ms;
 

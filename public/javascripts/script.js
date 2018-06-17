@@ -23,6 +23,12 @@
 var OAuth = '';
 var deviceId = '';
 
+function parseJwt(token) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace('-', '+').replace('_', '/');
+  return JSON.parse(window.atob(base64));
+};
+
 function nextTrack(OAuth, deviceId) {
   $.ajax({
     type: 'POST',
@@ -31,6 +37,12 @@ function nextTrack(OAuth, deviceId) {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + OAuth
+    },
+    success: function() {
+      console.log('next');
+    },
+    error: function(err) {
+      console.log(JSON.stringify(err.responseJSON));
     }
   }).done(function() {
     window.location.reload(1);
@@ -45,6 +57,12 @@ function prevTrack(OAuth, deviceId) {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + OAuth
+    },
+    success: function() {
+      console.log('prev');
+    },
+    error: function(err) {
+      console.log(JSON.stringify(err.responseJSON));
     }
   }).done(function() {
     window.location.reload(1);
@@ -59,6 +77,12 @@ function pauseTrack(OAuth, deviceId) {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + OAuth
+    },
+    success: function() {
+      console.log('pause');
+    },
+    error: function(err) {
+      console.log(JSON.stringify(err.responseJSON));
     }
   });
 }
@@ -71,6 +95,13 @@ function playTrack(OAuth, deviceId) {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + OAuth
+    },
+    data: '{}',
+    success: function() {
+      console.log('play');
+    },
+    error: function(err) {
+      console.log(JSON.stringify(err.responseJSON));
     }
   });
 }
@@ -82,7 +113,6 @@ $(document).ready(function() {
   img.addEventListener('load', function() {
     var vibrant = new Vibrant(img);
     var swatches = vibrant.swatches();
-    console.log(swatches);
     if (swatches['Vibrant'] == undefined) {
       var color = swatches['DarkMuted'].getHex();
     } else {
@@ -92,8 +122,10 @@ $(document).ready(function() {
     $('#bg').css('background-image', 'linear-gradient(' + color + ' 60%' + ', #000000 )');
   });
 
-  OAuth = $.cookie('OAuth');
-  deviceId = $.cookie('deviceId');
+  var token = $.cookie('jwt');
+  var parseToken = parseJwt(token);
+  OAuth = parseToken.OAuth;
+  deviceId = parseToken.deviceId;
 
   $('#next').click(function(e) {
     $('#next').addClass('disabled');
