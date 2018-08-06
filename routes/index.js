@@ -211,7 +211,7 @@ router.get('/', function(req, res, next) {
                 title: 'Hi, ' + displayName,
                 lyrics: '?',
                 description: '?',
-                imageAlbum: dataUser.images_url != '' ? dataUser.images_url : '/images/user.png',
+                imageAlbum: dataUser.images_url != '' ? dataUser.images_url : '/images/Profile.svg',
                 duration_ms: 0,
                 progress_ms: 0,
                 product: product
