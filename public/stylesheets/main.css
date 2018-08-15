@@ -1,5 +1,5 @@
 @import url(font-awesome.min.css);
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300italic,600italic,300,600");
+/* @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300italic,600italic,300,600"); */
 @font-face {
   font-family: ProductSans;
   src: url('../fonts/Product Sans Regular.ttf');
@@ -111,7 +111,8 @@ html {
 
 body, input, select, textarea {
   color: #ffffff;
-  font-family: ProductSans, "Lucida Grande", "Source Sans Pro", sans-serif;
+  font-family: ProductSans;
+  /* font-family: ProductSans, "Lucida Grande", "Source Sans Pro", sans-serif; */
   font-weight: 300;
   font-size: 1rem;
   line-height: 1.65;
