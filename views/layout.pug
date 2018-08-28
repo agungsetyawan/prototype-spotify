@@ -20,9 +20,11 @@ html
     noscript
       link(rel='stylesheet' href='/stylesheets/noscript.min.css')
     //- Scripts
-    script(async="" src="https://www.googletagmanager.com/gtag/js?id=UA-120572471-1")
-    script.
+    //- script(async="" src="https://www.googletagmanager.com/gtag/js?id=UA-120572471-1")
+    //- script.
       function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-120572471-1");
+    script.
+      !function(e,a,t,n,g,c){e.GoogleAnalyticsObject=n,e.ga||(e.ga=function(){(e.ga.q=e.ga.q||[]).push(arguments)}),e.ga.l=+new Date,g=a.createElement(t),c=a.getElementsByTagName(t)[0],g.src="https://www.google-analytics.com/analytics.js",c.parentNode.insertBefore(g,c)}(window,document,"script","ga"),ga("create","UA-120572471-1"),ga("send","pageview");
     script(src='/javascripts/jquery.min.js')
     script(src='/javascripts/jquery.cookie.min.js')
     //- script(src='https://sdk.scdn.co/spotify-player.js')
