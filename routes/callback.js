@@ -27,7 +27,7 @@ router.get('/', function(req, res, next) {
       });
       res.cookie('spotify_refresh_token', data.body['refresh_token']);
 
-      res.redirect('/');
+      res.redirect('/app');
     },
     function(err) {
       res.status(err.code);

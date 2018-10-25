@@ -23,6 +23,7 @@ require('console-stamp')(console, {
 
 //routes
 var indexRouter = require('./routes/index');
+var spotifyRouter = require('./routes/spotify');
 var authRouter = require('./routes/auth');
 var callbackRouter = require('./routes/callback');
 var refreshTokenRouter = require('./routes/refresh_token');
@@ -46,6 +47,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/app', spotifyRouter);
 app.use('/auth', authRouter);
 app.use('/callback', callbackRouter);
 app.use('/refresh_token', refreshTokenRouter);

@@ -1,93 +1,65 @@
-extends layout
-
-block content
-  #wrapper
-    header#header
-      .logo(style="background-image: url(" + imageAlbum + ")")
-      .content
-        .inner
-          h1= title
-          p= artist
-          if product != 'open'
-            if artist != 'Your spotify is offline'
-              ul.icons
-                li
-                  a(href='#')#prev.icon.fa-step-backward
-                li
-                  a(href='#')#pause.icon.fa-pause
-                li
-                  a(href='#')#next.icon.fa-step-forward
-      nav
-        ul
-          if lyrics != '?'
-            li
-              a(href='#lyrics') Lyrics
-          else
-            li
-              a(href='.').icon.fa-refresh
-          if description != '?'
-            li
-              a(href='#description') Desc
-          //- li
-            a(href='#work') Work
-          //- li
-            a(href='#about') About
-          //- li
-            a(href='#contact') Contact
-    #main
-      article#lyrics
-        h2.major Lyrics
-        span.image.main
-          img(src=imageAlbum style="width:150px")
-        p(style="white-space: pre-line")!= lyrics
-      article#description
-        h2.major Description
-        p(style="white-space: pre-line")!= description
-      //- article#about
-        h2.major About
-        span.image.main
-          img(src='images/pic03.jpg' alt='')
-        p
-          | Lorem ipsum dolor sit amet, consectetur et adipiscing elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem
-          | luctus ultrices. Aliquam libero et malesuada fames ac ante ipsum primis in faucibus. Cras viverra ligula sit amet ex mollis mattis lorem ipsum dolor sit amet.
-      //- article#contact
-        h2.major Contact
-        form(method='post' action='#')
-          .field.half.first
-            label(for='name') Name
-            input#name(type='text' name='name')
-          .field.half
-            label(for='email') Email
-            input#email(type='text' name='email')
-          .field
-            label(for='message') Message
-            textarea#message(name='message' rows='4')
-          ul.actions
-            li
-              input.special(type='submit' value='Send Message')
-            li
-              input(type='reset' value='Reset')
-        ul.icons
-          li
-            a.icon.fa-twitter(href='#')
-              span.label Twitter
-          li
-            a.icon.fa-facebook(href='#')
-              span.label Facebook
-          li
-            a.icon.fa-instagram(href='#')
-              span.label Instagram
-          li
-            a.icon.fa-github(href='#')
-              span.label GitHub
-    footer#footer
-      p.copyright
-        | © 2018 
-        a(href='https://protype.space' target='_blank') protype.space
-  #bg
-
-  script.
-    var image_album='#{imageAlbum}';
-    var duration_ms=#{duration_ms};
-    var progress_ms=#{progress_ms};
-  script(src='/javascripts/script.min.js')
+doctype html
+html(lang='en')
+  head
+    title Spotify | protype.space
+    meta(charset='utf-8')
+    meta(name='description', content='Welcome to Spotify protype.space')
+    meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    link(rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png")
+    link(rel="manifest" href="/images/site.webmanifest")
+    link(rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5")
+    meta(name="msapplication-TileColor" content="#da532c")
+    meta(name="theme-color" content="#ffffff")
+    link(rel='stylesheet', type='text/css', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='/stylesheets/vegas.min.css')
+    link(rel='stylesheet', type='text/css', href='/stylesheets/main0.min.css')
+    script.
+      !function(e,a,t,n,g,c){e.GoogleAnalyticsObject=n,e.ga||(e.ga=function(){(e.ga.q=e.ga.q||[]).push(arguments)}),e.ga.l=+new Date,g=a.createElement(t),c=a.getElementsByTagName(t)[0],g.src="https://www.google-analytics.com/analytics.js",c.parentNode.insertBefore(g,c)}(window,document,"script","ga"),ga("create","UA-120572471-1"),ga("send","pageview");
+  body
+    .bg-wraper.overlay.has-vignette
+      #bg.slider.opacity-50.vegas-container(style='height: 983px;')
+    section.section
+      .container
+        .row.text-center
+          .col-md-12.col-sm-12.col-xs-12
+            h2 
+              | Spotify
+              br
+              | protype.space
+          .col-md-12.col-sm-12.col-xs-12
+            p
+              | Singing without getting bored.
+              br
+              | Sing the song you are listening to on Spotify, without fear of wrong lyrics.
+            .button-group
+              a.btn.btn-common(href='https://spotify.protype.space/app') Get Started
+              br
+              a.btn.btn-border(href='https://www.agungsetyawan.com' target='_blank') About Me
+            .social.mt-4
+              a(href='https://twitter.com/01setyawan' target='_blank').twitter.fa-twitter
+              a(href='https://www.instagram.com/01setyawan/' target='_blank').instagram.fa-instagram
+              a(href='https://open.spotify.com/user/albjkjsq2svf67emfqjf1rwu5?si=hf706pb6TTilCqhcQa5RRQ' target='_blank').spotify.fa-spotify
+              br
+              a(href='https://github.com/agungsetyawan' target='_blank').github.fa-github
+              a(href='https://www.linkedin.com/in/agung-setyawan-4b476b145/' target='_blank').linkedin.fa-linkedin
+    #preloader
+      #loader-1.loader
+    script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/popper.min.js')
+    script(src='/javascripts/bootstrap.min.js')
+    script(src='/javascripts/vegas.min.js')
+    script(src='/javascripts/main0.min.js')
+    script.
+      $("#bg").vegas({
+      timer:false,
+      delay:6000,
+      transitionDuration:2000,
+      transition:"blur",
+      slides:[
+      {src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-169365.jpg"},
+      {src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-424773.jpg"},
+      {src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-516461.jpg"}
+      ]
+      });
