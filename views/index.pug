@@ -5,6 +5,7 @@ html(lang='en')
     meta(charset='utf-8')
     meta(name='description', content='Welcome to Spotify protype.space')
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    link(rel="manifest" href="manifest.json")
     link(rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png")
     link(rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png")
     link(rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png")
@@ -51,15 +52,3 @@ html(lang='en')
     script(src='/javascripts/bootstrap.min.js')
     script(src='/javascripts/vegas.min.js')
     script(src='/javascripts/main0.min.js')
-    script.
-      $("#bg").vegas({
-      timer:false,
-      delay:6000,
-      transitionDuration:2000,
-      transition:"blur",
-      slides:[
-      {src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-169365.jpg"},
-      {src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-424773.jpg"},
-      {src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-516461.jpg"}
-      ]
-      });
