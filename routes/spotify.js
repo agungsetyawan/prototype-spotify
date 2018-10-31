@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var axios = require('axios');
+var cheerio = require('cheerio');
 var mongoose = require('mongoose');
 var SpotifyWebApi = require('spotify-web-api-node');
-var Lyricist = require('lyricist');
 var jwt = require('jsonwebtoken');
-var lyricist = new Lyricist(process.env.GENIUS_CLIENT_ACCESS_TOKEN);
 
 const userModel = require('../models/user_model');
 const lyricsModel = require('../models/lyrics_model');
@@ -26,7 +25,7 @@ async function getLyricsDb(artist, title) {
   return await lyricsModel.findOne(query).exec();
 }
 
-async function getGeniusId(artist, title) {
+async function getGenius(artist, title) {
   if (title.indexOf('-') != -1) {
     title = title.substring(0, title.indexOf('-')).trim();
   }
@@ -36,27 +35,44 @@ async function getGeniusId(artist, title) {
   if (title.indexOf('feat') != -1) {
     title = title.substring(0, title.indexOf('feat')).trim();
   }
-  artist = artist.replace(/\s/g, '');
+  if (artist.indexOf(',') != -1) {
+    artist = artist.substring(0, artist.indexOf(',')).trim();
+  }
 
-  let id;
-  await axios({
-      method: 'get',
-      url: 'https://api.genius.com/search?q=' + encodeURI(title + ' ' + artist),
-      headers: {
-        'Authorization': 'Bearer ' + process.env.GENIUS_CLIENT_ACCESS_TOKEN
-      }
-    })
-    .then(function(res) {
-      if (res.data.response.hits.length > 0) {
-        id = res.data.response.hits[0].result.id;
-      } else {
-        id = null;
-      }
-    })
-    .catch(function(error) {
-      console.error(error);
-    });
-  return id;
+  let query = title + ' ' + artist;
+  query = query.replace(/[[(].*?[)\]]/g, '').trim() || query;
+  const res = await axios.get('https://genius.com/api/search/song', {
+    params: {
+      q: query,
+      per_page: 1
+    }
+  });
+  if (res.data.response.sections[0].hits.length > 0) {
+    return data = {
+      id: res.data.response.sections[0].hits[0].result.id,
+      url: res.data.response.sections[0].hits[0].result.url
+    }
+  } else {
+    return data = {
+      id: null,
+      url: null
+    }
+  }
+}
+
+async function getLyrics(url) {
+  const res = await axios.get(url);
+  let $ = cheerio.load(res.data);
+  return $('.lyrics').text().trim();
+}
+
+async function getDesc(id) {
+  const res = await axios.get('https://genius.com/api/songs/' + id, {
+    params: {
+      text_format: 'plain'
+    }
+  });
+  return res.data.response.song.description.plain;
 }
 
 async function spotifyGetMe() {
@@ -182,16 +198,13 @@ router.get('/', async function(req, res, next) {
         renderData.lyrics = lyricsDb.lyrics;
         renderData.description = lyricsDb.desc;
       } else {
-        let art = renderData.artist;
-        // console.log(art);
-        let geniusId = await getGeniusId(renderData.artist, renderData.title);
-        if (geniusId !== null) {
-          let song = await lyricist.song(geniusId, {
-            fetchLyrics: true,
-            textFormat: 'plain'
-          });
-          renderData.lyrics = song.lyrics;
-          renderData.description = song.description.plain;
+        let genius = await getGenius(renderData.artist, renderData.title);
+        if (genius.id !== null && genius.url !== null) {
+          let lrc = await getLyrics(genius.url);
+          renderData.lyrics = lrc;
+          let desc = await getDesc(genius.id);
+          renderData.description = desc;
+
           let lyricsData = {
             artist: renderData.artist,
             title: renderData.title,
