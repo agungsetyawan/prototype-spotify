@@ -12,6 +12,14 @@ var schema = new mongoose.Schema({
   lyrics: {
     type: String,
     default: null
+  },
+  desc: {
+    type: String,
+    default: null
+  },
+  report: {
+    type: Boolean,
+    default: false
   }
 });
 

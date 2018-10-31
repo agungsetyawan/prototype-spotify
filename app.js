@@ -11,7 +11,6 @@ var result = dotenv.config();
 if (result.error) {
   throw result.error;
 }
-console.log(result.parsed);
 
 require('console-stamp')(console, {
   pattern: 'yy-mm-dd HH:MM:ss.l',
@@ -72,11 +71,10 @@ module.exports = app;
 
 // =============================================================================
 
-// var mongodb = 'mongodb://localhost:27017/spotify';
 var mongodb = process.env.DB;
 mongoose.connect(mongodb, function() {
   try {
-    console.log('connected to database:', mongodb);
+    console.log('Database connected', mongodb);
   } catch (error) {
     console.log('Error mongodb:', error);
   }

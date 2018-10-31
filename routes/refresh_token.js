@@ -2,17 +2,13 @@ var express = require('express');
 var router = express.Router();
 var SpotifyWebApi = require('spotify-web-api-node');
 
-var env = {
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.PORT == '3001' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI
-}
+const redirectUri = process.env.PORT == '3001' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI;
 
 router.get('/', function(req, res, next) {
   var spotifyApi = new SpotifyWebApi({
-    clientId: env.clientId,
-    clientSecret: env.clientSecret,
-    redirectUri: env.redirectUri,
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    redirectUri: redirectUri,
     refreshToken: req.cookie('spotify_refresh_token')
   });
 
@@ -28,7 +24,7 @@ router.get('/', function(req, res, next) {
       });
     },
     function(err) {
-      console.log('Could not refresh access token', err);
+      console.error('Could not refresh access token', err);
     }
   );
 });
