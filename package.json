@@ -1,9 +1,15 @@
 {
   "name": "prototype-spotify",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "pm2": "pm2 reload ecosystem.config.js",
+    "pm2:production": "npm run pm2 -- --env production",
+    "pm2:deploy": "pm2 deploy ecosystem.config.js",
+    "pm2:setup:production": "npm run pm2:deploy production setup",
+    "pm2:deploy:production": "npm run pm2:deploy production",
+    "pm2:reload:production": "npm run pm2:deploy production exec \"npm run pm2:production\""
   },
   "dependencies": {
     "axios": "^0.18.0",

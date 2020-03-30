@@ -9,7 +9,7 @@ var jwt = require('jsonwebtoken');
 const userModel = require('../models/user_model');
 const lyricsModel = require('../models/lyrics_model');
 
-const redirectUri = process.env.PORT == '3001' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI;
+const redirectUri = process.env.REDIRECT_URI;
 
 var spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,

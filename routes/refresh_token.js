@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var SpotifyWebApi = require('spotify-web-api-node');
 
-const redirectUri = process.env.PORT == '3001' ? process.env.REDIRECT_URI_LOCAL : process.env.REDIRECT_URI;
+const redirectUri = process.env.REDIRECT_URI;
 
 router.get('/', function(req, res, next) {
   var spotifyApi = new SpotifyWebApi({
