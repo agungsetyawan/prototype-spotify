@@ -36,7 +36,7 @@ module.exports = {
     production: {
       key: './setyawan.pem',
       user: 'ubuntu',
-      host: '18.139.163.225',
+      host: '52.220.98.33',
       ref: 'origin/master',
       repo: 'git@bitbucket.org:agungsetyawan/prototype_spotify.git',
       path: '/home/ubuntu/spotify',
