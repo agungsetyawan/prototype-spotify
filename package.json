@@ -24,7 +24,7 @@
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.3.11",
     "morgan": "~1.9.0",
-    "pug": "2.0.0-beta11",
+    "pug": "3.0.1",
     "spotify-web-api-node": "^3.1.1"
   },
   "engines": {
