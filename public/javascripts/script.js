@@ -27,24 +27,24 @@ function parseJwt(token) {
   var base64Url = token.split('.')[1];
   var base64 = base64Url.replace('-', '+').replace('_', '/');
   return JSON.parse(window.atob(base64));
-};
+}
 
 function nextTrack(OAuth, deviceId) {
   $.ajax({
     type: 'POST',
     url: 'https://api.spotify.com/v1/me/player/next?device_id=' + deviceId,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + OAuth
+      Authorization: 'Bearer ' + OAuth,
     },
-    success: function() {
+    success: function () {
       console.log('next');
     },
-    error: function(err) {
+    error: function (err) {
       console.log(JSON.stringify(err.responseJSON));
-    }
-  }).done(function() {
+    },
+  }).done(function () {
     window.location.reload(1);
   });
 }
@@ -54,17 +54,17 @@ function prevTrack(OAuth, deviceId) {
     type: 'POST',
     url: 'https://api.spotify.com/v1/me/player/previous?device_id=' + deviceId,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + OAuth
+      Authorization: 'Bearer ' + OAuth,
     },
-    success: function() {
+    success: function () {
       console.log('prev');
     },
-    error: function(err) {
+    error: function (err) {
       console.log(JSON.stringify(err.responseJSON));
-    }
-  }).done(function() {
+    },
+  }).done(function () {
     window.location.reload(1);
   });
 }
@@ -74,16 +74,16 @@ function pauseTrack(OAuth, deviceId) {
     type: 'PUT',
     url: 'https://api.spotify.com/v1/me/player/pause?device_id=' + deviceId,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + OAuth
+      Authorization: 'Bearer ' + OAuth,
     },
-    success: function() {
+    success: function () {
       console.log('pause');
     },
-    error: function(err) {
+    error: function (err) {
       console.log(JSON.stringify(err.responseJSON));
-    }
+    },
   });
 }
 
@@ -92,25 +92,25 @@ function playTrack(OAuth, deviceId) {
     type: 'PUT',
     url: 'https://api.spotify.com/v1/me/player/play?device_id=' + deviceId,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + OAuth
+      Authorization: 'Bearer ' + OAuth,
     },
     data: '{}',
-    success: function() {
+    success: function () {
       console.log('play');
     },
-    error: function(err) {
+    error: function (err) {
       console.log(JSON.stringify(err.responseJSON));
-    }
+    },
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   var img = document.createElement('img');
   img.setAttribute('crossOrigin', '*');
   img.setAttribute('src', image_album);
-  img.addEventListener('load', function() {
+  img.addEventListener('load', function () {
     var vibrant = new Vibrant(img);
     var swatches = vibrant.swatches();
     if (swatches['Vibrant'] == undefined) {
@@ -119,7 +119,10 @@ $(document).ready(function() {
       var color = swatches['Vibrant'].getHex();
     }
     $("meta[name='theme-color']").attr('content', color);
-    $('#bg').css('background-image', 'linear-gradient(' + color + ' 60%' + ', #000000 )');
+    $('#bg').css(
+      'background-image',
+      'linear-gradient(' + color + ' 60%' + ', #000000 )'
+    );
   });
 
   var token = $.cookie('jwt');
@@ -127,7 +130,7 @@ $(document).ready(function() {
   OAuth = parseToken.OAuth;
   deviceId = parseToken.deviceId;
 
-  $('#next').click(function(e) {
+  $('#next').click(function (e) {
     $('#next').addClass('disabled');
     $('#prev').addClass('disabled');
     $('#pause').addClass('disabled');
@@ -135,7 +138,7 @@ $(document).ready(function() {
     nextTrack(OAuth, deviceId);
   });
 
-  $('#prev').click(function(e) {
+  $('#prev').click(function (e) {
     $('#next').addClass('disabled');
     $('#prev').addClass('disabled');
     $('#pause').addClass('disabled');
@@ -143,7 +146,7 @@ $(document).ready(function() {
     prevTrack(OAuth, deviceId);
   });
 
-  $('#pause').click(function(e) {
+  $('#pause').click(function (e) {
     var pause = $('#pause').hasClass('fa-pause');
     if (!pause) {
       e.preventDefault();
@@ -159,8 +162,8 @@ $(document).ready(function() {
   });
 });
 
-if ((duration_ms != 0) && (progress_ms != 0)) {
-  setTimeout(function() {
+if (duration_ms != 0 && progress_ms != 0) {
+  setTimeout(function () {
     window.location.reload(1);
-  }, (duration_ms - progress_ms));
+  }, duration_ms - progress_ms);
 }
